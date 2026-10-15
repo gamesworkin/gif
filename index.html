@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Vídeo para GIF - 4shared 2009 Retro Style</title>
+    <!-- Tailwind CSS for utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for classic retro icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Gifshot library for client-side animated GIF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.4.5/gifshot.min.js"></script>
+    <style>
+        /* 4shared 2009 Classic Blue Aesthetic Custom Styles */
+        body {
+            background-color: #e6ecf5;
+            font-family: Tahoma, Arial, sans-serif;
+            color: #333333;
+        }
+        .header-gradient {
+            background: linear-gradient(to bottom, #1a5cad 0%, #0e3d7a 100%);
+            border-bottom: 2px solid #082952;
+        }
+        .box-container {
+            background: #ffffff;
+            border: 1px solid #bce8f1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .box-header {
+            background: linear-gradient(to bottom, #f2f7fc 0%, #d8e5f2 100%);
+            border-bottom: 1px solid #bce8f1;
+            color: #0e3d7a;
+            font-weight: bold;
+        }
+        .btn-retro {
+            background: linear-gradient(to bottom, #4da6ff 0%, #1a75ff 100%);
+            border: 1px solid #0047b3;
+            color: #ffffff;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+            border-radius: 3px;
+        }
+        .btn-retro:hover {
+            background: linear-gradient(to bottom, #66b3ff 0%, #3385ff 100%);
+        }
+        .btn-retro:active {
+            background: linear-gradient(to bottom, #005ce6 0%, #0047b3 100%);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+        }
+        .btn-gray-retro {
+            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 100%);
+            border: 1px solid #adadad;
+            color: #333333;
+            border-radius: 3px;
+        }
+        .btn-gray-retro:hover {
+            background: linear-gradient(to bottom, #ffffff 0%, #d4d4d4 100%);
+        }
+        .retro-input {
+            border: 1px solid #7f9db9;
+            background: #ffffff;
+            padding: 3px 6px;
+            border-radius: 2px;
+        }
+        /* Custom message notification */
+        #notification {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top 4shared Header (2009 Style) -->
+    <header class="header-gradient text-white py-3 px-6 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <!-- Retro Logo Simulation -->
+                <div class="bg-white text-[#1a5cad] font-black text-2xl px-3 py-1 rounded shadow-inner tracking-wider">
+                    4shared<span class="text-xs text-orange-500 font-normal ml-1">.gif</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Conversor de Vídeo para GIF Animado</h1>
+                    <p class="text-xs text-blue-200">Compartilhe seus melhores momentos em 10 frames clássicos!</p>
+                </div>
+            </div>
+            <div class="text-xs text-blue-200 flex items-center space-x-4">
+                <span><i class="fa-solid fa-server mr-1"></i> Servidor: <strong>BR-Online #09</strong></span>
+                <span><i class="fa-solid fa-user-shield mr-1"></i> Usuário: <strong>Convidado_2009</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto w-full p-4 flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- Left Column: Upload and Video Player (2 Cols) -->
+        <div class="md:col-span-2 space-y-4">
+            
+            <!-- Step 1: Input Source Box -->
+            <div class="box-container rounded-sm p-4">
+                <div class="box-header -mx-4 -mt-4 p-2 px-4 mb-4 text-sm flex items-center">
+                    <i class="fa-solid fa-folder-open mr-2 text-[#1a5cad]"></i> 1. Selecionar Arquivo de Vídeo (MP4)
+                </div>
+                
+                <div class="space-y-3 text-sm">
+                    <!-- Tab Selector for Upload vs URL -->
+                    <div class="flex border-b border-gray-300 pb-2 space-x-2">
+                        <button onclick="switchTab('upload')" id="tab-upload-btn" class="px-3 py-1 font-bold text-sm bg-white border border-b-0 border-blue-400 rounded-t text-[#1a5cad]">Do Dispositivo</button>
+                        <button onclick="switchTab('url')" id="tab-url-btn" class="px-3 py-1 font-bold text-sm bg-gray-200 border border-gray-300 rounded-t text-gray-600">Link Direto (URL)</button>
+                    </div>
+
+                    <!-- Upload Input -->
+                    <div id="tab-upload-content" class="space-y-2 pt-1">
+                        <label class="block text-xs font-bold text-gray-700">Selecione um arquivo .mp4 do seu computador:</label>
+                        <input type="file" id="videoFile" accept="video/mp4,video/*" class="w-full retro-input text-xs py-1">
+                    </div>
+
+                    <!-- URL Input -->
+                    <div id="tab-url-content" class="space-y-2 pt-1 hidden">
+                        <label class="block text-xs font-bold text-gray-700">Cole o link direto do MP4 (Hospedado na web):</label>
+                        <div class="flex gap-2">
+                            <input type="url" id="videoUrlInput" placeholder="https://exemplo.com/video.mp4" class="flex-grow retro-input text-xs py-1">
+                            <button onclick="loadVideoFromUrl()" class="btn-retro px-3 py-1 text-xs font-bold cursor-pointer">Carregar Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Video Player & Frame Selection Box -->
+            <div class="box-container rounded-sm p-4">
+                <div class="box-header -mx-4 -mt-4 p-2 px-4 mb-4 text-sm flex items-center justify-between">
+                    <span><i class="fa-solid fa-film mr-2 text-[#1a5cad]"></i> 2. Player e Escolha do Momento Inicial</span>
+                    <span id="videoStatus" class="text-xs text-gray-500 font-normal">Nenhum vídeo carregado</span>
+                </div>
+
+                <div class="flex flex-col items-center space-y-3">
+                    <!-- HTML5 Video Player -->
+                    <div class="w-full bg-black rounded overflow-hidden relative aspect-video flex items-center justify-center border border-gray-400">
+                        <video id="videoPlayer" class="w-full h-full object-contain" controls crossorigin="anonymous"></video>
+                        <div id="videoPlaceholder" class="absolute text-white text-xs flex flex-col items-center pointer-events-none">
+                            <i class="fa-solid fa-circle-play text-4xl mb-2 text-blue-400"></i>
+                            <span>Carregue um vídeo para iniciar a pré-visualização</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-gray-600 text-center">
+                        <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> 
+                        Posicione o player no segundo exato onde deseja começar. O conversor extrairá automaticamente <strong>10 frames consecutivos</strong> a partir deste ponto.
+                    </p>
+
+                    <!-- Convert Action Button -->
+                    <button id="convertBtn" onclick="startConversion()" disabled class="btn-retro w-full py-2 font-bold text-sm cursor-pointer opacity-50 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Converter 10 Frames para GIF Animado
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Result, Base64 & Download (1 Col) -->
+        <div class="space-y-4">
+            
+            <!-- Step 3: Result Box -->
+            <div class="box-container rounded-sm p-4 h-full flex flex-col justify-between">
+                <div>
+                    <div class="box-header -mx-4 -mt-4 p-2 px-4 mb-4 text-sm flex items-center">
+                        <i class="fa-solid fa-image mr-2 text-[#1a5cad]"></i> 3. GIF Gerado & Código Base64
+                    </div>
+
+                    <!-- Progress Indicator -->
+                    <div id="progressBox" class="hidden my-4 p-3 bg-blue-50 border border-blue-200 rounded text-center space-y-2">
+                        <div class="text-xs font-bold text-blue-800" id="progressText">Processando frames... (0/10)</div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden border border-gray-300">
+                            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full w-0 transition-all duration-200"></div>
+                        </div>
+                    </div>
+
+                    <!-- Output Preview Container -->
+                    <div id="outputContainer" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded p-4 bg-gray-50 min-h-[200px] mb-4 text-center">
+                        <div id="outputPlaceholder" class="text-gray-400 text-xs space-y-1">
+                            <i class="fa-solid fa-file-image text-3xl mb-1"></i>
+                            <p>O GIF convertido aparecerá aqui</p>
+                        </div>
+                        <img id="gifResultImage" class="hidden max-w-full max-h-56 rounded border border-gray-400 shadow-sm mb-2" alt="GIF Animado Convertido">
+                        <span id="gifInfo" class="text-xs text-gray-500 hidden"></span>
+                    </div>
+
+                    <!-- Base64 Code Area -->
+                    <div class="space-y-1 mb-4">
+                        <label class="block text-xs font-bold text-gray-700">Código Base64 (Data URI):</label>
+                        <textarea id="base64Output" readonly placeholder="O código Base64 aparecerá aqui após a conversão..." class="w-full h-24 retro-input text-[10px] font-mono resize-none text-gray-600"></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons: Download & Copy -->
+                <div class="space-y-2 pt-2 border-t border-gray-200">
+                    <button id="downloadBtn" onclick="downloadGif()" disabled class="btn-retro w-full py-1.5 text-xs font-bold opacity-50 cursor-pointer flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-download"></i> Baixar Arquivo .GIF
+                    </button>
+                    <button id="copyBtn" onclick="copyBase64()" disabled class="btn-gray-retro w-full py-1.5 text-xs font-bold opacity-50 cursor-pointer flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-copy"></i> Copiar Código Base64
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Retro Notification Banner / Custom Alert Box -->
+    <div id="notification" class="fixed bottom-5 right-5 bg-[#1a5cad] text-white px-4 py-2 rounded shadow-lg text-xs font-bold opacity-0 pointer-events-none z-50 flex items-center gap-2 border border-blue-300">
+        <i id="notifIcon" class="fa-solid fa-circle-check text-yellow-300"></i>
+        <span id="notifText">Notificação</span>
+    </div>
+
+    <!-- Hidden Canvas for Frame Extraction -->
+    <canvas id="extractCanvas" class="hidden"></canvas>
+
+    <!-- Footer (2009 Copyright vibe) -->
+    <footer class="bg-[#d8e5f2] border-t border-gray-300 text-center py-3 text-xs text-gray-600 mt-6">
+        <p>&copy; 2009-2026 4shared Corp. &bull; Conversor de Vídeo para GIF v1.0 &bull; Todos os direitos reservados.</p>
+        <p class="text-[10px] text-gray-500 mt-1">Desenvolvido com tecnologia HTML5 Canvas & Gifshot.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // DOM Elements
+        const videoFile = document.getElementById('videoFile');
+        const videoUrlInput = document.getElementById('videoUrlInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const videoStatus = document.getElementById('videoStatus');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBox = document.getElementById('progressBox');
+        const progressText = document.getElementById('progressText');
+        const progressBar = document.getElementById('progressBar');
+        const outputContainer = document.getElementById('outputContainer');
+        const outputPlaceholder = document.getElementById('outputPlaceholder');
+        const gifResultImage = document.getElementById('gifResultImage');
+        const gifInfo = document.getElementById('gifInfo');
+        const base64Output = document.getElementById('base64Output');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const extractCanvas = document.getElementById('extractCanvas');
+        const notification = document.getElementById('notification');
+        const notifText = document.getElementById('notifText');
+
+        let currentBlobUrl = null;
+        let generatedGifDataUrl = null;
+
+        // Tab Switching Helper
+        function switchTab(mode) {
+            const uploadBtn = document.getElementById('tab-upload-btn');
+            const urlBtn = document.getElementById('tab-url-btn');
+            const uploadContent = document.getElementById('tab-upload-content');
+            const urlContent = document.getElementById('tab-url-content');
+
+            if (mode === 'upload') {
+                uploadBtn.className = "px-3 py-1 font-bold text-sm bg-white border border-b-0 border-blue-400 rounded-t text-[#1a5cad]";
+                urlBtn.className = "px-3 py-1 font-bold text-sm bg-gray-200 border border-gray-300 rounded-t text-gray-600";
+                uploadContent.classList.remove('hidden');
+                urlContent.classList.add('hidden');
+            } else {
+                urlBtn.className = "px-3 py-1 font-bold text-sm bg-white border border-b-0 border-blue-400 rounded-t text-[#1a5cad]";
+                uploadBtn.className = "px-3 py-1 font-bold text-sm bg-gray-200 border border-gray-300 rounded-t text-gray-600";
+                urlContent.classList.remove('hidden');
+                uploadContent.classList.add('hidden');
+            }
+        }
+
+        // Notification Helper (replaces alert)
+        function showNotification(message, isError = false) {
+            notifText.innerText = message;
+            const icon = document.getElementById('notifIcon');
+            icon.className = isError ? "fa-solid fa-triangle-exclamation text-yellow-300" : "fa-solid fa-circle-check text-yellow-300";
+            notification.style.opacity = '1';
+            setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 3500);
+        }
+
+        // Handle File Input Change
+        videoFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (currentBlobUrl) {
+                URL.revokeObjectURL(currentBlobUrl);
+            }
+
+            currentBlobUrl = URL.createObjectURL(file);
+            loadVideoSource(currentBlobUrl, file.name);
+        });
+
+        // Handle Video URL Load Button
+        function loadVideoFromUrl() {
+            const url = videoUrlInput.value.trim();
+            if (!url) {
+                showNotification("Por favor, insira uma URL válida de vídeo MP4.", true);
+                return;
+            }
+            loadVideoSource(url, url.split('/').pop() || "Vídeo Remoto");
+        }
+
+        // Common Video Loader
+        function loadVideoSource(src, name) {
+            videoPlayer.src = src;
+            videoPlayer.load();
+            videoPlaceholder.style.display = 'none';
+            videoStatus.innerText = `Carregado: ${name}`;
+            
+            videoPlayer.onloadedmetadata = function() {
+                convertBtn.disabled = false;
+                convertBtn.classList.remove('opacity-50');
+                showNotification("Vídeo carregado com sucesso!");
+            };
+
+            videoPlayer.onerror = function() {
+                showNotification("Erro ao carregar o vídeo. Verifique o arquivo ou link CORS.", true);
+                videoStatus.innerText = "Erro no carregamento";
+            };
+        }
+
+        // Core Conversion Function: Extract 10 frames and compile GIF
+        async function startConversion() {
+            if (!videoPlayer.src || videoPlayer.duration === 0) {
+                showNotification("Carregue um vídeo válido primeiro.", true);
+                return;
+            }
+
+            convertBtn.disabled = true;
+            convertBtn.classList.add('opacity-50');
+            progressBox.classList.remove('hidden');
+            progressText.innerText = "Preparando extração de 10 frames...";
+            progressBar.style.width = "10%";
+
+            const startTime = videoPlayer.currentTime;
+            const duration = videoPlayer.duration;
+            // Determine frame interval (e.g., 0.1 seconds per frame or remaining duration)
+            const interval = Math.min(0.15, (duration - startTime) / 10);
+            
+            const canvas = extractCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Set reasonable resolution for GIF to maintain performance
+            const targetWidth = 320;
+            const videoWidth = videoPlayer.videoWidth || 640;
+            const videoHeight = videoPlayer.videoHeight || 360;
+            const targetHeight = Math.round(videoHeight * (targetWidth / videoWidth));
+
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+
+            let framesDataUrls = [];
+
+            try {
+                for (let i = 0; i < 10; i++) {
+                    let targetTime = startTime + (i * interval);
+                    if (targetTime > duration) targetTime = duration;
+
+                    progressText.innerText = `Extraindo frame ${i + 1} de 10...`;
+                    progressBar.style.width = `${10 + (i * 6)}%`;
+
+                    await seekVideoTo(targetTime);
+
+                    ctx.drawImage(videoPlayer, 0, 0, targetWidth, targetHeight);
+                    framesDataUrls.push(canvas.toDataURL('image/jpeg', 0.85));
+                }
+
+                progressText.innerText = "Codificando frames em GIF Animado...";
+                progressBar.style.width = "75%";
+
+                // Use Gifshot to generate GIF
+                gifshot.createGIF({
+                    images: framesDataUrls,
+                    interval: 0.15,
+                    numFrames: 10,
+                    width: targetWidth,
+                    height: targetHeight,
+                    gifWidth: targetWidth,
+                    gifHeight: targetHeight
+                }, function(obj) {
+                    progressBox.classList.add('hidden');
+                    convertBtn.disabled = false;
+                    convertBtn.classList.remove('opacity-50');
+
+                    if (!obj.error) {
+                        generatedGifDataUrl = obj.image;
+                        
+                        // Show output preview
+                        outputPlaceholder.style.display = 'none';
+                        gifResultImage.src = generatedGifDataUrl;
+                        gifResultImage.classList.remove('hidden');
+                        
+                        // Calculate approximate size
+                        const sizeKb = Math.round((generatedGifDataUrl.length * (3/4)) / 1024);
+                        gifInfo.innerText = `Resolução: ${targetWidth}x${targetHeight}px | Tamanho: ~${sizeKb} KB | 10 Frames`;
+                        gifInfo.classList.remove('hidden');
+
+                        // Fill base64 textarea
+                        base64Output.value = generatedGifDataUrl;
+
+                        // Enable action buttons
+                        downloadBtn.disabled = false;
+                        downloadBtn.classList.remove('opacity-50');
+                        copyBtn.disabled = false;
+                        copyBtn.classList.remove('opacity-50');
+
+                        showNotification("GIF Animado gerado com sucesso!");
+                    } else {
+                        showNotification("Erro na geração do GIF: " + obj.errorMsg, true);
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                progressBox.classList.add('hidden');
+                convertBtn.disabled = false;
+                convertBtn.classList.remove('opacity-50');
+                showNotification("Erro durante a extração dos frames.", true);
+            }
+        }
+
+        // Helper promise to seek video cleanly
+        function seekVideoTo(time) {
+            return new Promise((resolve) => {
+                videoPlayer.currentTime = time;
+                function onSeeked() {
+                    videoPlayer.removeEventListener('seeked', onSeeked);
+                    // Slight timeout to ensure frame render buffer updates
+                    setTimeout(resolve, 80);
+                }
+                videoPlayer.addEventListener('seeked', onSeeked);
+            });
+        }
+
+        // Download GIF File
+        function downloadGif() {
+            if (!generatedGifDataUrl) return;
+            const a = document.createElement('a');
+            a.href = generatedGifDataUrl;
+            a.download = 'video_convertido_4shared.gif';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showNotification("Download do arquivo .gif iniciado!");
+        }
+
+        // Copy Base64 Code to Clipboard
+        function copyBase64() {
+            if (!base64Output.value) return;
+            base64Output.select();
+            base64Output.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                showNotification("Código Base64 copiado para a área de transferência!");
+            } catch (err) {
+                showNotification("Falha ao copiar código.", true);
+            }
+        }
+    </script>
+</body>
+</html>
